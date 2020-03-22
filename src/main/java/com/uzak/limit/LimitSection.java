@@ -1,4 +1,4 @@
-package com.uzak.redis;
+package com.uzak.limit;
 
 import com.uzak.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

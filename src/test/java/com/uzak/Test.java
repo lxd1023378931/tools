@@ -1,6 +1,6 @@
 package com.uzak;
 
-import com.uzak.redis.LimitSection;
+import com.uzak.limit.LimitSection;
 import com.uzak.thread.CountDownActuate;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
