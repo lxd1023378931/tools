@@ -1,6 +1,7 @@
 package com.uzak.thread;
 
 import com.google.common.collect.Lists;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -65,12 +66,8 @@ public class CountDownActuate {
     }
 
     public ExecutorService getExecutorService() {
+        Assert.notNull(executorService, "ExecutorService is null!");
         return executorService;
-    }
-
-
-    private <V> Future<V> submit(TkC<V> task, CountDownLatch countDownLatch) {
-        return getExecutorService().submit(() -> task.and(countDownLatch).apply());
     }
 
     private void execute(TkR task, CountDownLatch countDownLatch) {
