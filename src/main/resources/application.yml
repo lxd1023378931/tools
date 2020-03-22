@@ -1,0 +1,13 @@
+spring:
+  redis:
+    host: dohko.redis.hualala.com
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 1024
+        max-idle: 32
+        min-idle: 16
+        max-wait: 10
+
+server:
+  port: 8080
