@@ -30,8 +30,7 @@ public class Test {
                 e.printStackTrace();
             }
         });
-
-        Future future = actuate.addTkC(() -> {
+        CountDownActuate.CustomFuture future = actuate.addTkC(() -> {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -40,9 +39,8 @@ public class Test {
             System.out.println("tkC1");
             return 1;
         });
-
         actuate.start();
-        System.out.println(future.get());
+        System.out.println(future.get(() -> 0));
     }
 
     @org.junit.Test

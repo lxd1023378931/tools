@@ -1,10 +1,13 @@
 package com.uzak.thread;
 
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 /**
  * @Auther: liangxiudou
@@ -41,10 +44,10 @@ public class CountDownActuate {
         tkRS.add(tkR);
     }
 
-    public <V> Future<V> addTkC(TkC<V> tkC) {
+    public <V> CustomFuture<V> addTkC(TkC<V> tkC) {
         FutureTask<V> futureTask = new FutureTask<>(tkC::apply);
         tkCS.add(futureTask);
-        return futureTask;
+        return new CustomFuture<>(futureTask);
     }
 
     public void start() throws InterruptedException {
@@ -74,15 +77,35 @@ public class CountDownActuate {
         getExecutorService().execute(() -> task.and(countDownLatch).apply());
     }
 
+    @AllArgsConstructor
+    public static class CustomFuture<V> {
+        private Future<V> future;
+
+        public V get(Supplier<V> orElse) {
+            try {
+                return Optional.ofNullable(future.get()).orElseGet(orElse);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            return orElse.get();
+        }
+    }
+
     @FunctionalInterface
     public interface TkC<R> {
         R apply();
 
         default TkC<R> and(CountDownLatch countDownLatch) {
             return () -> {
-                R r = apply();
-                countDownLatch.countDown();
-                return r;
+                try {
+                    R r = apply();
+                    return r;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
+                return null;
             };
         }
     }
@@ -93,8 +116,13 @@ public class CountDownActuate {
 
         default TkR and(CountDownLatch countDownLatch) {
             return () -> {
-                apply();
-                countDownLatch.countDown();
+                try {
+                    apply();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
             };
         }
     }
